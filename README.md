@@ -14,6 +14,18 @@ A running K3s or Kubernetes cluster.
 kubectl configured with admin permissions.
 Docker images for the app and web components pushed to a registry (example: Docker Hub).
 
+2. Applying Manifests
+Apply all Kubernetes configurations located in the k8s/ directory:
+bash
+kubectl apply -f k8s/
+Use code with caution.
+3. Database Initialization
+If the database is empty on the first run, initialize the schema using the provided ConfigMap:
+bash
+kubectl get configmap db-init -n ticket-app -o jsonpath='{.data.init\.sql}' | \
+kubectl exec -i -n ticket-app deployment/db -- mariadb -u root -p[PASSWORD] ticke
+
+
 Check Logs
   Database: kubectl logs -n ticket-app deployment/db
   Flask App: kubectl logs -n ticket-app deployment/app
