@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-init
+  namespace: ticket-app
+data:
+  init.sql: |
+    CREATE DATABASE IF NOT EXISTS ticketdb;
+    USE ticketdb;
+
+    CREATE TABLE IF NOT EXISTS tickets (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        status ENUM('open', 'in_progress', 'resolved') DEFAULT 'open',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+    INSERT INTO tickets (title, description, status) VALUES
+        ('Cannot connect to shared network drive', 'User in Room 210 reports they cannot access the shared drive at \\\\fileserver\\shared. Other users on the same floor are unaffected. Restarting the workstation did not help.', 'open'),
+        ('Printer offline in Lab 3', 'The HP LaserJet in Lab 3 is showing as offline. Students cannot print assignments. The printer appears powered on but is not responding to ping.', 'open'),
+        ('New faculty laptop needs imaging', 'Professor arriving next Monday needs a department-standard laptop image installed. Model is a Dell Latitude 5540. Contact IT by Thursday to schedule.', 'in_progress'),
+        ('Student email account locked after failed logins', 'Incoming freshman locked out of their university email after too many failed password attempts during orientation. Needs account unlocked and password reset instructions.', 'resolved'),
+        ('Lab workstations need Chrome updated', 'Chrome on the 30 workstations in Lab 1 is two major versions behind. Scheduled update pushed via SCCM failed last Tuesday. Manual intervention required.', 'in_progress'),
+        ('Wi-Fi dropping in conference room B', 'Multiple staff report intermittent Wi-Fi drops during video calls in Conference Room B. Issue does not occur in adjacent rooms. Access point may need a reboot or firmware update.', 'open'),
+        ('Request: install VSCode on classroom machines', 'INET 3001 instructor has requested Visual Studio Code be installed on all classroom machines in Room 305 before the semester starts. Needs the Remote - SSH extension included.', 'open'),
+        ('Server room temperature alert', 'Environmental sensor in the main server room triggered a high-temperature alert at 2:14 AM. Temp peaked at 82F before returning to normal. HVAC unit may need inspection.', 'resolved'),
+        ('VPN client not connecting after Windows update', 'Several remote staff are unable to connect to the university VPN following a Windows update pushed last night. Error code 800 returned. Rollback or updated VPN client needed.', 'in_progress'),
+        ('Old student accounts not disabled after graduation', 'Audit found 47 accounts from last year graduates that are still active in Active Directory. Per policy these should be disabled 90 days post-graduation. Needs cleanup.', 'open');

@@ -1,0 +1,63 @@
+# ============================================================
+# Flask Application — Deployment and Service
+# INET 4031 Lab 13
+# ============================================================
+# Fill in each blank marked with # FILL IN
+# Refer to the wiki (Part 4b) for the expected value hints
+# ============================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+  namespace: ticket-app
+spec:
+  replicas: 1             # FILL IN: 1
+  selector:
+    matchLabels:
+      app: app              # FILL IN: app
+  template:
+    metadata:
+      labels:
+        app: app            # FILL IN: app  (must match matchLabels above)
+    spec:
+      containers:
+        - name: app
+          image: sarralieu04ux/flask-app:latest        # FILL IN: YOUR_DOCKERHUB_USERNAME/flask-app:latest
+          ports:
+            - containerPort: 5000 # FILL IN: 5000
+          envFrom:
+            - secretRef:
+                name: db-credentials   # FILL IN: db-credentials
+          env:
+            - name: DB_HOST
+              value: "db"
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: MARIADB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: MARIADB_PASSWORD
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: MARIADB_DATABASE
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: app
+  namespace: ticket-app
+spec:
+  selector:
+    app: app                # FILL IN: app
+  ports:
+    - port: 5000             # FILL IN: 5000
+      targetPort: 5000       # FILL IN: 5000

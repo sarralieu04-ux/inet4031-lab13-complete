@@ -1,0 +1,71 @@
+# ============================================================
+# MariaDB — PersistentVolumeClaim, Deployment, and Service
+# INET 4031 Lab 13
+# ============================================================
+# Fill in each blank marked with # FILL IN
+# Refer to the wiki (Part 4a) for the expected value hints
+# ============================================================
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: db-pvc
+  namespace: ticket-app
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi          # FILL IN: 1Gi
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db
+  namespace: ticket-app
+spec:
+  replicas: 1             # FILL IN: 1
+  selector:
+    matchLabels:
+      app: db              # FILL IN: db
+  template:
+    metadata:
+      labels:
+        app: db            # FILL IN: db  (must match matchLabels above)
+    spec:
+      containers:
+        - name: db
+          image: mariadb:11
+          ports:
+            - containerPort: 3306 # FILL IN: 3306
+          envFrom:
+            - secretRef:
+                name: db-credentials   # FILL IN: db-credentials
+          volumeMounts:
+            - name: db-storage
+              mountPath: /var/lib/mysql # FILL IN: /var/lib/mysql
+            - name: db-init
+              mountPath: /docker-entrypoint-initdb.d
+      volumes:
+        - name: db-storage
+          persistentVolumeClaim:
+            claimName: db-pvc  # FILL IN: db-pvc
+        - name: db-init
+          configMap:
+            name: db-init
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  namespace: ticket-app
+spec:
+  selector:
+    app: db                # FILL IN: db
+  ports:
+    - port: 3306             # FILL IN: 3306
+      targetPort: 3306       # FILL IN: 3306
