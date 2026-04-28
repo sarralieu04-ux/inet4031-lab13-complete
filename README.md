@@ -17,10 +17,8 @@ kubectl configured with admin permissions.
 Docker images for the app and web components pushed to a registry (In my case it was DockerHub).
 
 2. Applying Manifests
-3. 
 Kubernetes Secrets are used to manage the sensitive database credentials required for the application to function. The process involves creating a Secret object within the specific application namespace before any pods are deployed. This ensures that sensitive information, such as the database root password and user credentials, is stored securely within the cluster rather than being hardcoded into the manifest files or version control.
 During the setup, I mapped variables from a local environment file to the Secret. Because the MariaDB container requires specific naming conventions for its environment variables, I had to ensured the keys in the Secret aligned with the requirements of the database image. These secrets are then injected into the backend and database pods as environment variables, allowing the services to authenticate with one another securely.
-
 
 Check Logs
   Database: kubectl logs -n ticket-app deployment/db
